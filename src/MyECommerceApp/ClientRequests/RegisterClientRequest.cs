@@ -8,7 +8,7 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.ClientRequests
 {
-    public static class RegisterClientRequest
+    public class RegisterClientRequest : BaseFunction
     {
         public class Command
         {
@@ -45,11 +45,11 @@ namespace MyECommerceApp.ClientRequests
 
             public Task<Result> Handle(Command command)
             {
-                var clientRequest = new ClientRequest (
-                    NewId.Next().ToSequentialGuid(), 
-                    command.Name, 
-                    command.Address, 
-                    command.PhoneNumber, 
+                var clientRequest = new ClientRequest(
+                    NewId.Next().ToSequentialGuid(),
+                    command.Name,
+                    command.Address,
+                    command.PhoneNumber,
                     command.Any);
 
                 _context.Set<ClientRequest>().Add(clientRequest);
@@ -60,21 +60,18 @@ namespace MyECommerceApp.ClientRequests
                 });
             }
         }
-    }
 
-    public class RegisterClientRequestFunction : BaseFunction
-    {
         [LambdaFunction]
         [RestApi(LambdaHttpMethod.Post, "/client-requests")]
         public Task<IHttpResult> Handle(
             [FromServices] AnyClientRequests.Runner runner,
             [FromServices] TransactionBehavior behavior,
-            [FromServices] RegisterClientRequest.Handler handler,
-            [FromBody] RegisterClientRequest.Command command)
+            [FromServices] Handler handler,
+            [FromBody] Command command)
         {
             return Handle(async () =>
             {
-                new RegisterClientRequest.Validator().ValidateAndThrow(command);
+                new Validator().ValidateAndThrow(command);
                 command.Any = await runner.Run(new AnyClientRequests.Query() { Name = command.Name });
                 var result = await behavior.Handle(() => handler.Handle(command));
                 return result;

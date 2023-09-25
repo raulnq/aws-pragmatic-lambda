@@ -7,13 +7,13 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.ShoppingCart;
 
-public class CleanShoppingCartFunction : BaseFunction
+public class CleanShoppingCart : BaseFunction
 {
     [LambdaFunction]
     public Task<SQSBatchResponse> Handle(
-    [FromServices] TransactionBehavior behavior,
-    [FromServices] ApplicationDbContext context,
-    SQSEvent sqsEvent)
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] ApplicationDbContext context,
+        SQSEvent sqsEvent)
     {
         return HandleFromSubscription<OrderRegistered>(async (orderRegistered) =>
         {

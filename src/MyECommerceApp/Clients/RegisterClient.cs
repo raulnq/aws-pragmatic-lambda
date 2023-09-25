@@ -7,7 +7,7 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.Clients
 {
-    public static class RegisterClient
+    public class RegisterClient : BaseFunction
     {
         public class Command
         {
@@ -53,21 +53,18 @@ namespace MyECommerceApp.Clients
                 });
             }
         }
-    }
 
-    public class RegisterClientFunction : BaseFunction
-    {
         [LambdaFunction]
         public Task<SQSBatchResponse> Handle(
             [FromServices] TransactionBehavior behavior,
-            [FromServices] RegisterClient.Handler handler,
+            [FromServices] Handler handler,
             [FromServices] GetClientRequest.Runner runner,
             SQSEvent sqsEvent)
         {
             return HandleFromSubscription<ClientRequestApproved>(async (clientRequestApproved) =>
             {
                 var clientRequest = await runner.Run(new GetClientRequest.Query() { ClientRequestId = clientRequestApproved.ClientRequestId });
-                var command = new RegisterClient.Command()
+                var command = new Command()
                 {
                     ClientId = clientRequest.ClientRequestId,
                     Address = clientRequest.Address,

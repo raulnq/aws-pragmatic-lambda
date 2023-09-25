@@ -8,7 +8,7 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.Products
 {
-    public static class RegisterProduct
+    public class RegisterProduct : BaseFunction
     {
         public class Command
         {
@@ -59,21 +59,18 @@ namespace MyECommerceApp.Products
                 });
             }
         }
-    }
 
-    public class RegisterProductFunction : BaseFunction
-    {
         [LambdaFunction]
         [RestApi(LambdaHttpMethod.Post, "/products")]
         public Task<IHttpResult> Handle(
-        [FromServices] AnyProducts.Runner runner,
-        [FromServices] TransactionBehavior behavior,
-        [FromServices] RegisterProduct.Handler handler,
-        [FromBody] RegisterProduct.Command command)
+            [FromServices] AnyProducts.Runner runner,
+            [FromServices] TransactionBehavior behavior,
+            [FromServices] Handler handler,
+            [FromBody] Command command)
         {
             return Handle(async () =>
             {
-                new RegisterProduct.Validator().ValidateAndThrow(command);
+                new Validator().ValidateAndThrow(command);
                 command.Any = await runner.Run(new AnyProducts.Query() { Name = command.Name });
                 var result = await behavior.Handle(() => handler.Handle(command));
                 return result;

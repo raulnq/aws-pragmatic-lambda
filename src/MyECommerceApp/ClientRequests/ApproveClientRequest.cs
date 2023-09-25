@@ -6,7 +6,7 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.ClientRequests
 {
-    public static class ApproveClientRequest
+    public class ApproveClientRequest: BaseFunction
     {
         public class Command
         {
@@ -29,21 +29,18 @@ namespace MyECommerceApp.ClientRequests
                 clientRequest.Approve();
             }
         }
-    }
 
-    public class ApproveClientRequestFunction : BaseFunction
-    {
         [LambdaFunction]
         [RestApi(LambdaHttpMethod.Post, "/client-requests/{clientRequestId}/approve")]
         public Task<IHttpResult> Handle(
-        [FromServices] TransactionBehavior behavior,
-        [FromServices] ApproveClientRequest.Handler handler,
-        [FromServices] EventPublisher publisher,
-        string clientRequestId)
+            [FromServices] TransactionBehavior behavior,
+            [FromServices] Handler handler,
+            [FromServices] EventPublisher publisher,
+            string clientRequestId)
         {
             return Handle(async () =>
             {
-                var command = new ApproveClientRequest.Command() { ClientRequestId = Guid.Parse(clientRequestId) };
+                var command = new Command() { ClientRequestId = Guid.Parse(clientRequestId) };
                 await behavior.Handle(() => handler.Handle(command));
                 await publisher.Publish(new ClientRequestApproved(command.ClientRequestId));
             });

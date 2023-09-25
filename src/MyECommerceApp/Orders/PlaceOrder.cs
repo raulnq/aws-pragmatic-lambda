@@ -11,7 +11,7 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.Orders
 {
-    public static class PlaceOrder
+    public class PlaceOrder : BaseFunction
     {
         public class Command
         {
@@ -63,23 +63,20 @@ namespace MyECommerceApp.Orders
                 });
             }
         }
-    }
 
-    public class PlaceOrderFunction : BaseFunction
-    {
         [LambdaFunction]
         [RestApi(LambdaHttpMethod.Post, "/orders")]
         public Task<IHttpResult> Handle(
-        [FromServices] GetClients.Runner getClientRunner,
-        [FromServices] ListShoppingCartItems.Runner listShoppingCartItemsRunner,
-        [FromServices] TransactionBehavior behavior,
-        [FromServices] PlaceOrder.Handler handler,
-        [FromServices] EventPublisher publisher,
-        [FromBody] PlaceOrder.Command command)
+            [FromServices] GetClients.Runner getClientRunner,
+            [FromServices] ListShoppingCartItems.Runner listShoppingCartItemsRunner,
+            [FromServices] TransactionBehavior behavior,
+            [FromServices] Handler handler,
+            [FromServices] EventPublisher publisher,
+            [FromBody] Command command)
         {
             return Handle(async () =>
             {
-                new PlaceOrder.Validator().ValidateAndThrow(command);
+                new Validator().ValidateAndThrow(command);
                 command.Client = await getClientRunner.Run(new GetClients.Query() { ClientId = command.ClientId });
                 command.ShoppingCartItems = await listShoppingCartItemsRunner.Run(new ListShoppingCartItems.Query() { ClientId = command.ClientId });
                 var result = await behavior.Handle(() => handler.Handle(command));

@@ -6,7 +6,7 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.ClientRequests
 {
-    public class ListClientRequests
+    public class ListClientRequests : BaseFunction
     {
         public class Query : ListQuery
         {
@@ -42,19 +42,16 @@ namespace MyECommerceApp.ClientRequests
                 }, query);
             }
         }
-    }
 
-    public class ListClientRequestsFunction : BaseFunction
-    {
         [LambdaFunction]
         [RestApi(LambdaHttpMethod.Get, "/client-requests")]
         public Task<IHttpResult> Handle(
-            [FromServices] ListClientRequests.Runner runner,
+            [FromServices] Runner runner,
             [FromQuery] string name,
             [FromQuery] int page,
             [FromQuery] int pageSize)
         {
-            return Handle(() => runner.Run(new ListClientRequests.Query() { Name = name, Page = page, PageSize = pageSize }));
+            return Handle(() => runner.Run(new Query() { Name = name, Page = page, PageSize = pageSize }));
         }
     }
 }

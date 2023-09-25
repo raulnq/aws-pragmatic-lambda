@@ -8,7 +8,7 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.ShoppingCart
 {
-    public static class AddProductToShoppingCart
+    public class AddProductToShoppingCart : BaseFunction
     {
         public class Command
         {
@@ -57,21 +57,18 @@ namespace MyECommerceApp.ShoppingCart
                 });
             }
         }
-    }
 
-    public class AddProductToShoppingCartFunction : BaseFunction
-    {
         [LambdaFunction]
         [RestApi(LambdaHttpMethod.Post, "/shopping-cart")]
         public Task<IHttpResult> Handle(
-        [FromServices] AnyShoppingCartItems.Runner runner,
-        [FromServices] TransactionBehavior behavior,
-        [FromServices] AddProductToShoppingCart.Handler handler,
-        [FromBody] AddProductToShoppingCart.Command command)
+            [FromServices] AnyShoppingCartItems.Runner runner,
+            [FromServices] TransactionBehavior behavior,
+            [FromServices] Handler handler,
+            [FromBody] Command command)
         {
             return Handle(async () =>
             {
-                new AddProductToShoppingCart.Validator().ValidateAndThrow(command);
+                new Validator().ValidateAndThrow(command);
                 command.Any = await runner.Run(new AnyShoppingCartItems.Query() { ClientId = command.ClientId, ProductId = command.ProductId });
                 var result = await behavior.Handle(() => handler.Handle(command));
                 return result;

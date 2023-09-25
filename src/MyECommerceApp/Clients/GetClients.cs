@@ -6,7 +6,7 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.Clients
 {
-    public class GetClients
+    public class GetClients : BaseFunction
     {
         public class Query
         {
@@ -32,18 +32,14 @@ namespace MyECommerceApp.Clients
                     .Where(Tables.Clients.Field(nameof(Query.ClientId)), query.ClientId));
             }
         }
-    }
 
-    public class GetClientsFunction : BaseFunction
-    {
         [LambdaFunction]
         [RestApi(LambdaHttpMethod.Get, "/clients/{clientId}")]
         public Task<IHttpResult> Handle(
-        [FromServices] GetClients.Runner runner,
-        string clientId)
+            [FromServices] Runner runner,
+            string clientId)
         {
-            return Handle(() => runner.Run(new GetClients.Query() { ClientId = Guid.Parse(clientId) }));
+            return Handle(() => runner.Run(new Query() { ClientId = Guid.Parse(clientId) }));
         }
     }
-
 }

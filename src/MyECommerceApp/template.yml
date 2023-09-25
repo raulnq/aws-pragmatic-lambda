@@ -22,28 +22,7 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: "myecommercetopic"
-  MyECommerceAppClientRequestsRegisterClientRequestFunctionHandleGenerated:
-    Type: AWS::Serverless::Function
-    Metadata:
-      Tool: Amazon.Lambda.Annotations
-      SyncedEvents:
-        - RootPost
-    Properties:
-      Runtime: dotnet6
-      CodeUri: .
-      MemorySize: 256
-      Timeout: 30
-      Policies:
-        - AWSLambdaBasicExecutionRole
-      PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.ClientRequests.RegisterClientRequestFunction_Handle_Generated::Handle
-      Events:
-        RootPost:
-          Type: Api
-          Properties:
-            Path: /client-requests
-            Method: POST
-  MyECommerceAppClientRequestsApproveClientRequestFunctionHandleGenerated:
+  MyECommerceAppClientRequestsApproveClientRequestHandleGenerated:
     Type: AWS::Serverless::Function
     Metadata:
       Tool: Amazon.Lambda.Annotations
@@ -60,19 +39,19 @@ Resources:
             TopicName:
               Ref: SNSTopic
       PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.ClientRequests.ApproveClientRequestFunction_Handle_Generated::Handle
+      Handler: MyECommerceApp::MyECommerceApp.ClientRequests.ApproveClientRequest_Handle_Generated::Handle
       Events:
         RootPost:
           Type: Api
           Properties:
             Path: /client-requests/{clientRequestId}/approve
             Method: POST
-  MyECommerceAppClientRequestsListClientRequestsFunctionHandleGenerated:
+  MyECommerceAppClientRequestsRegisterClientRequestHandleGenerated:
     Type: AWS::Serverless::Function
     Metadata:
       Tool: Amazon.Lambda.Annotations
       SyncedEvents:
-        - RootGet
+        - RootPost
     Properties:
       Runtime: dotnet6
       CodeUri: .
@@ -81,14 +60,14 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
       PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.ClientRequests.ListClientRequestsFunction_Handle_Generated::Handle
+      Handler: MyECommerceApp::MyECommerceApp.ClientRequests.RegisterClientRequest_Handle_Generated::Handle
       Events:
-        RootGet:
+        RootPost:
           Type: Api
           Properties:
             Path: /client-requests
-            Method: GET
-  MyECommerceAppClientsRegisterClientFunctionHandleGenerated:
+            Method: POST
+  MyECommerceAppClientsRegisterClientHandleGenerated:
     Type: AWS::Serverless::Function
     Metadata:
       Tool: Amazon.Lambda.Annotations
@@ -100,7 +79,7 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
       PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.Clients.RegisterClientFunction_Handle_Generated::Handle
+      Handler: MyECommerceApp::MyECommerceApp.Clients.RegisterClient_Handle_Generated::Handle
       Events:
         RootEvent:
           Type: SNS
@@ -111,7 +90,7 @@ Resources:
               event:
                 - clientrequestapproved
             SqsSubscription: true
-  MyECommerceAppClientsGetClientsFunctionHandleGenerated:
+  MyECommerceAppClientsGetClientsHandleGenerated:
     Type: AWS::Serverless::Function
     Metadata:
       Tool: Amazon.Lambda.Annotations
@@ -125,14 +104,14 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
       PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.Clients.GetClientsFunction_Handle_Generated::Handle
+      Handler: MyECommerceApp::MyECommerceApp.Clients.GetClients_Handle_Generated::Handle
       Events:
         RootGet:
           Type: Api
           Properties:
             Path: /clients/{clientId}
             Method: GET
-  MyECommerceAppProductsRegisterProductFunctionHandleGenerated:
+  MyECommerceAppProductsRegisterProductHandleGenerated:
     Type: AWS::Serverless::Function
     Metadata:
       Tool: Amazon.Lambda.Annotations
@@ -146,14 +125,14 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
       PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.Products.RegisterProductFunction_Handle_Generated::Handle
+      Handler: MyECommerceApp::MyECommerceApp.Products.RegisterProduct_Handle_Generated::Handle
       Events:
         RootPost:
           Type: Api
           Properties:
             Path: /products
             Method: POST
-  MyECommerceAppProductsEnableProductFunctionHandleGenerated:
+  MyECommerceAppProductsEnableProductHandleGenerated:
     Type: AWS::Serverless::Function
     Metadata:
       Tool: Amazon.Lambda.Annotations
@@ -167,14 +146,14 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
       PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.Products.EnableProductFunction_Handle_Generated::Handle
+      Handler: MyECommerceApp::MyECommerceApp.Products.EnableProduct_Handle_Generated::Handle
       Events:
         RootPost:
           Type: Api
           Properties:
             Path: /products/{productId}/enable
             Method: POST
-  MyECommerceAppShoppingCartAddProductToShoppingCartFunctionHandleGenerated:
+  MyECommerceAppShoppingCartAddProductToShoppingCartHandleGenerated:
     Type: AWS::Serverless::Function
     Metadata:
       Tool: Amazon.Lambda.Annotations
@@ -188,14 +167,37 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
       PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.ShoppingCart.AddProductToShoppingCartFunction_Handle_Generated::Handle
+      Handler: MyECommerceApp::MyECommerceApp.ShoppingCart.AddProductToShoppingCart_Handle_Generated::Handle
       Events:
         RootPost:
           Type: Api
           Properties:
             Path: /shopping-cart
             Method: POST
-  MyECommerceAppOrdersPlaceOrderFunctionHandleGenerated:
+  MyECommerceAppShoppingCartCleanShoppingCartHandleGenerated:
+    Type: AWS::Serverless::Function
+    Metadata:
+      Tool: Amazon.Lambda.Annotations
+    Properties:
+      Runtime: dotnet6
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      PackageType: Zip
+      Handler: MyECommerceApp::MyECommerceApp.ShoppingCart.CleanShoppingCart_Handle_Generated::Handle
+      Events:
+        RootEvent:
+          Type: SNS
+          Properties:
+            Topic:
+              Ref: SNSTopic
+            FilterPolicy:
+              event:
+                - orderregistered
+            SqsSubscription: true
+  MyECommerceAppOrdersPlaceOrderHandleGenerated:
     Type: AWS::Serverless::Function
     Metadata:
       Tool: Amazon.Lambda.Annotations
@@ -212,17 +214,19 @@ Resources:
             TopicName:
               Ref: SNSTopic
       PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.Orders.PlaceOrderFunction_Handle_Generated::Handle
+      Handler: MyECommerceApp::MyECommerceApp.Orders.PlaceOrder_Handle_Generated::Handle
       Events:
         RootPost:
           Type: Api
           Properties:
             Path: /orders
             Method: POST
-  MyECommerceAppShoppingCartCleanShoppingCartFunctionHandleGenerated:
+  MyECommerceAppClientRequestsListClientRequestsHandleGenerated:
     Type: AWS::Serverless::Function
     Metadata:
       Tool: Amazon.Lambda.Annotations
+      SyncedEvents:
+        - RootGet
     Properties:
       Runtime: dotnet6
       CodeUri: .
@@ -231,14 +235,10 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
       PackageType: Zip
-      Handler: MyECommerceApp::MyECommerceApp.ShoppingCart.CleanShoppingCartFunction_Handle_Generated::Handle
+      Handler: MyECommerceApp::MyECommerceApp.ClientRequests.ListClientRequests_Handle_Generated::Handle
       Events:
-        RootEvent:
-          Type: SNS
+        RootGet:
+          Type: Api
           Properties:
-            Topic:
-              Ref: SNSTopic
-            FilterPolicy:
-              event:
-                - orderregistered
-            SqsSubscription: true
+            Path: /client-requests
+            Method: GET

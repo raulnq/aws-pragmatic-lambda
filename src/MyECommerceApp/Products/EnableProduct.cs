@@ -5,7 +5,7 @@ using MyECommerceApp.Infrastructure.Host;
 
 namespace MyECommerceApp.Products
 {
-    public static class EnableProduct
+    public class EnableProduct: BaseFunction
     {
         public class Command
         {
@@ -28,20 +28,17 @@ namespace MyECommerceApp.Products
                 clientRequest.Enable();
             }
         }
-    }
 
-    public class EnableProductFunction : BaseFunction
-    {
         [LambdaFunction]
         [RestApi(LambdaHttpMethod.Post, "/products/{productId}/enable")]
         public Task<IHttpResult> Handle(
-        [FromServices] TransactionBehavior behavior,
-        [FromServices] EnableProduct.Handler handler,
+            [FromServices] TransactionBehavior behavior,
+            [FromServices] Handler handler,
         string productId)
         {
             return Handle(async () =>
             {
-                var command = new EnableProduct.Command() { ProductId = Guid.Parse(productId) };
+                var command = new Command() { ProductId = Guid.Parse(productId) };
                 await behavior.Handle(() => handler.Handle(command));
             });
         }
