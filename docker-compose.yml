@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  sqlserver:
+    container_name: "my-sqlserver"
+    image: mcr.microsoft.com/mssql/server:2019-CU14-ubuntu-20.04
+    ports:
+      - "1433:1433"    
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Sqlserver123$
+  localstack:
+    container_name: "my-localstack"
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - ".volume/tmp/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
