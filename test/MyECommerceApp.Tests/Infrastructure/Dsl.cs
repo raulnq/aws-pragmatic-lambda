@@ -1,6 +1,6 @@
 ﻿using Xunit.Abstractions;
 
-namespace MyECommerceApp.Tests;
+namespace MyECommerceApp.Tests.Infrastructure;
 
 public abstract class Dsl
 {

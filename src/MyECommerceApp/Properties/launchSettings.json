@@ -7,7 +7,8 @@
       "executablePath": "%USERPROFILE%\\.dotnet\\tools\\dotnet-lambda-test-tool-6.0.exe",
       "environmentVariables": {
         "DbConnectionString": "Server=localhost,1433;Database=MyECommerceApp;User ID=sa;Password=Sqlserver123$;MultipleActiveResultSets=true;TrustServerCertificate=True;",
-        "TopicArn": "arn:aws:sns:us-east-1:000000000000:myecommercetopic"
+        "TopicArn": "arn:aws:sns:us-east-1:000000000000:myecommercetopic",
+        "IsLocal": "true"
       }
     }
   }

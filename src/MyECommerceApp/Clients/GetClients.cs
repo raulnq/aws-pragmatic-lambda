@@ -4,42 +4,41 @@ using MyECommerceApp.Infrastructure.EntityFramework;
 using MyECommerceApp.Infrastructure.SqlKata;
 using MyECommerceApp.Infrastructure.Host;
 
-namespace MyECommerceApp.Clients
+namespace MyECommerceApp.Clients;
+
+public class GetClients : BaseFunction
 {
-    public class GetClients : BaseFunction
+    public class Query
     {
-        public class Query
-        {
-            public Guid ClientId { get; set; }
-        }
+        public Guid ClientId { get; set; }
+    }
 
-        public class Result
-        {
-            public Guid ClientId { get; set; }
-            public string Name { get; set; }
-            public string Address { get; set; }
-            public string PhoneNumber { get; set; }
-        }
+    public class Result
+    {
+        public Guid ClientId { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+    }
 
-        public class Runner : BaseRunner
-        {
-            public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
+    public class Runner : BaseRunner
+    {
+        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
 
-            public Task<Result> Run(Query query)
-            {
-                return _queryRunner.Get<Result>((qf) => qf
-                    .Query(Tables.Clients)
-                    .Where(Tables.Clients.Field(nameof(Query.ClientId)), query.ClientId));
-            }
-        }
-
-        [LambdaFunction]
-        [RestApi(LambdaHttpMethod.Get, "/clients/{clientId}")]
-        public Task<IHttpResult> Handle(
-            [FromServices] Runner runner,
-            string clientId)
+        public Task<Result> Run(Query query)
         {
-            return Handle(() => runner.Run(new Query() { ClientId = Guid.Parse(clientId) }));
+            return _queryRunner.Get<Result>((qf) => qf
+                .Query(Tables.Clients)
+                .Where(Tables.Clients.Field(nameof(Query.ClientId)), query.ClientId));
         }
+    }
+
+    [LambdaFunction]
+    [RestApi(LambdaHttpMethod.Get, "/clients/{clientId}")]
+    public Task<IHttpResult> Handle(
+        [FromServices] Runner runner,
+        string clientId)
+    {
+        return Handle(() => runner.Run(new Query() { ClientId = Guid.Parse(clientId) }));
     }
 }

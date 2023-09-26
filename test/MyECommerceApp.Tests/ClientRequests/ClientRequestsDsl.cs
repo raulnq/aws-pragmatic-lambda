@@ -2,6 +2,7 @@
 using Shouldly;
 using Bogus;
 using Xunit.Abstractions;
+using MyECommerceApp.Tests.Infrastructure;
 
 namespace MyECommerceApp.Tests.ClientRequests;
 

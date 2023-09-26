@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace MyECommerceApp.Tests;
+namespace MyECommerceApp.Tests.Infrastructure;
 
 public class ApiGatewayUrlProvider
 {
@@ -12,7 +12,7 @@ public class ApiGatewayUrlProvider
     {
         var startInfo = new ProcessStartInfo()
         {
-            FileName = "aws", 
+            FileName = "aws",
             Arguments = "apigateway get-rest-apis --endpoint-url=http://localhost:4566 --query \"items[0].id\"",
             CreateNoWindow = true,
             RedirectStandardOutput = true,
@@ -21,7 +21,7 @@ public class ApiGatewayUrlProvider
 
         var process = Process.Start(startInfo);
 
-        if(process is null)
+        if (process is null)
         {
             throw new ApplicationException("Missing Gateway URL");
         }
@@ -35,7 +35,7 @@ public class ApiGatewayUrlProvider
 
         var apiGatewayId = output.Replace("\"", "");
 
-        if(string.IsNullOrEmpty(apiGatewayId) || apiGatewayId.Contains("null"))
+        if (string.IsNullOrEmpty(apiGatewayId) || apiGatewayId.Contains("null"))
         {
             throw new ApplicationException("Missing Gateway URL");
         }

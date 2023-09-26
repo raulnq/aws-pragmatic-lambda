@@ -2,6 +2,7 @@
 using Bogus;
 using Xunit.Abstractions;
 using MyECommerceApp.Orders;
+using MyECommerceApp.Tests.Infrastructure;
 
 namespace MyECommerceApp.Tests.Orders;
 

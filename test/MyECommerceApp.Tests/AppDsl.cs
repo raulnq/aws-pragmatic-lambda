@@ -1,4 +1,5 @@
 ﻿using MyECommerceApp.Tests.ClientRequests;
+using MyECommerceApp.Tests.Infrastructure;
 using MyECommerceApp.Tests.Orders;
 using MyECommerceApp.Tests.Products;
 using MyECommerceApp.Tests.ShoppingCart;

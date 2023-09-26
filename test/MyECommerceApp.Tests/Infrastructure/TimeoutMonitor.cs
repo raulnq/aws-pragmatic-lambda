@@ -1,7 +1,7 @@
 ﻿using System.Runtime.ExceptionServices;
 using Shouldly;
 
-namespace MyECommerceApp.Tests;
+namespace MyECommerceApp.Tests.Infrastructure;
 
 public class TimeoutMonitor
 {

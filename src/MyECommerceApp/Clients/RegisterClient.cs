@@ -5,75 +5,74 @@ using MyECommerceApp.ClientRequests;
 using MyECommerceApp.Infrastructure.EntityFramework;
 using MyECommerceApp.Infrastructure.Host;
 
-namespace MyECommerceApp.Clients
+namespace MyECommerceApp.Clients;
+
+public class RegisterClient : BaseFunction
 {
-    public class RegisterClient : BaseFunction
+    public class Command
     {
-        public class Command
+        public Guid ClientId { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+    }
+
+    public class Result
+    {
+        public Guid ClientId { get; set; }
+    }
+
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
         {
-            public Guid ClientId { get; set; }
-            public string Name { get; set; }
-            public string Address { get; set; }
-            public string PhoneNumber { get; set; }
+            RuleFor(command => command.Name).MaximumLength(100).NotEmpty();
+            RuleFor(command => command.Address).MaximumLength(500).NotEmpty();
+            RuleFor(command => command.PhoneNumber).MaximumLength(20).NotEmpty();
+        }
+    }
+
+    public class Handler
+    {
+        private readonly ApplicationDbContext _context;
+
+        public Handler(ApplicationDbContext context)
+        {
+            _context = context;
         }
 
-        public class Result
+        public Task<Result> Handle(Command command)
         {
-            public Guid ClientId { get; set; }
-        }
+            var clientRequest = new Client(command.ClientId, command.Name, command.Address, command.PhoneNumber);
 
-        public class Validator : AbstractValidator<Command>
-        {
-            public Validator()
+            _context.Add(clientRequest);
+
+            return Task.FromResult(new Result()
             {
-                RuleFor(command => command.Name).MaximumLength(100).NotEmpty();
-                RuleFor(command => command.Address).MaximumLength(500).NotEmpty();
-                RuleFor(command => command.PhoneNumber).MaximumLength(20).NotEmpty();
-            }
+                ClientId = clientRequest.ClientId
+            });
         }
+    }
 
-        public class Handler
+    [LambdaFunction]
+    public Task<SQSBatchResponse> Handle(
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] Handler handler,
+        [FromServices] GetClientRequest.Runner runner,
+        SQSEvent sqsEvent)
+    {
+        return HandleFromSubscription<ClientRequestApproved>(async (clientRequestApproved) =>
         {
-            private readonly ApplicationDbContext _context;
-
-            public Handler(ApplicationDbContext context)
+            var clientRequest = await runner.Run(new GetClientRequest.Query() { ClientRequestId = clientRequestApproved.ClientRequestId });
+            var command = new Command()
             {
-                _context = context;
-            }
-
-            public Task<Result> Handle(Command command)
-            {
-                var clientRequest = new Client(command.ClientId, command.Name, command.Address, command.PhoneNumber);
-
-                _context.Add(clientRequest);
-
-                return Task.FromResult(new Result()
-                {
-                    ClientId = clientRequest.ClientId
-                });
-            }
-        }
-
-        [LambdaFunction]
-        public Task<SQSBatchResponse> Handle(
-            [FromServices] TransactionBehavior behavior,
-            [FromServices] Handler handler,
-            [FromServices] GetClientRequest.Runner runner,
-            SQSEvent sqsEvent)
-        {
-            return HandleFromSubscription<ClientRequestApproved>(async (clientRequestApproved) =>
-            {
-                var clientRequest = await runner.Run(new GetClientRequest.Query() { ClientRequestId = clientRequestApproved.ClientRequestId });
-                var command = new Command()
-                {
-                    ClientId = clientRequest.ClientRequestId,
-                    Address = clientRequest.Address,
-                    Name = clientRequest.Name,
-                    PhoneNumber = clientRequest.PhoneNumber,
-                };
-                new RegisterClient.Validator().ValidateAndThrow(command);
-                await behavior.Handle(() => handler.Handle(command));
-            }, sqsEvent);
-        }
+                ClientId = clientRequest.ClientRequestId,
+                Address = clientRequest.Address,
+                Name = clientRequest.Name,
+                PhoneNumber = clientRequest.PhoneNumber,
+            };
+            new RegisterClient.Validator().ValidateAndThrow(command);
+            await behavior.Handle(() => handler.Handle(command));
+        }, sqsEvent);
     }
 }

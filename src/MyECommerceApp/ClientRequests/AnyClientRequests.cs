@@ -1,32 +1,31 @@
 ﻿using MyECommerceApp.Infrastructure.EntityFramework;
 using MyECommerceApp.Infrastructure.SqlKata;
 
-namespace MyECommerceApp.ClientRequests
+namespace MyECommerceApp.ClientRequests;
+
+public class AnyClientRequests
 {
-    public class AnyClientRequests
+    public class Query
     {
-        public class Query
+        public string Name { get; set; }
+    }
+
+    public class Runner : BaseRunner
+    {
+        public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
+
+        public Task<bool> Run(Query query)
         {
-            public string Name { get; set; }
-        }
+            return _queryRunner.Any((qf) => {
+                var statement = qf.Query(Tables.ClientRequests);
 
-        public class Runner : BaseRunner
-        {
-            public Runner(SqlKataQueryRunner queryRunner) : base(queryRunner) { }
+                if (!string.IsNullOrEmpty(query.Name))
+                {
+                    statement = statement.Where(Tables.ClientRequests.Field(nameof(Query.Name)), query.Name);
+                }
 
-            public Task<bool> Run(Query query)
-            {
-                return _queryRunner.Any((qf) => {
-                    var statement = qf.Query(Tables.ClientRequests);
-
-                    if (!string.IsNullOrEmpty(query.Name))
-                    {
-                        statement = statement.Where(Tables.ClientRequests.Field(nameof(Query.Name)), query.Name);
-                    }
-
-                    return statement;
-                });
-            }
+                return statement;
+            });
         }
     }
 }

@@ -4,46 +4,45 @@ using MyECommerceApp.Infrastructure.EntityFramework;
 using MyECommerceApp.Infrastructure.Messaging;
 using MyECommerceApp.Infrastructure.Host;
 
-namespace MyECommerceApp.ClientRequests
+namespace MyECommerceApp.ClientRequests;
+
+public class ApproveClientRequest: BaseFunction
 {
-    public class ApproveClientRequest: BaseFunction
+    public class Command
     {
-        public class Command
+        public Guid ClientRequestId { get; set; }
+    }
+
+    public class Handler
+    {
+        private readonly ApplicationDbContext _context;
+
+        public Handler(ApplicationDbContext context)
         {
-            public Guid ClientRequestId { get; set; }
+            _context = context;
         }
 
-        public class Handler
+        public async Task Handle(Command command)
         {
-            private readonly ApplicationDbContext _context;
+            var clientRequest = await _context.Get<ClientRequest>(command.ClientRequestId);
 
-            public Handler(ApplicationDbContext context)
-            {
-                _context = context;
-            }
-
-            public async Task Handle(Command command)
-            {
-                var clientRequest = await _context.Get<ClientRequest>(command.ClientRequestId);
-
-                clientRequest.Approve();
-            }
+            clientRequest.Approve();
         }
+    }
 
-        [LambdaFunction]
-        [RestApi(LambdaHttpMethod.Post, "/client-requests/{clientRequestId}/approve")]
-        public Task<IHttpResult> Handle(
-            [FromServices] TransactionBehavior behavior,
-            [FromServices] Handler handler,
-            [FromServices] EventPublisher publisher,
-            string clientRequestId)
+    [LambdaFunction]
+    [RestApi(LambdaHttpMethod.Post, "/client-requests/{clientRequestId}/approve")]
+    public Task<IHttpResult> Handle(
+        [FromServices] TransactionBehavior behavior,
+        [FromServices] Handler handler,
+        [FromServices] EventPublisher publisher,
+        string clientRequestId)
+    {
+        return Handle(async () =>
         {
-            return Handle(async () =>
-            {
-                var command = new Command() { ClientRequestId = Guid.Parse(clientRequestId) };
-                await behavior.Handle(() => handler.Handle(command));
-                await publisher.Publish(new ClientRequestApproved(command.ClientRequestId));
-            });
-        }
+            var command = new Command() { ClientRequestId = Guid.Parse(clientRequestId) };
+            await behavior.Handle(() => handler.Handle(command));
+            await publisher.Publish(new ClientRequestApproved(command.ClientRequestId));
+        });
     }
 }

@@ -1,7 +1,7 @@
 ﻿using MyECommerceApp.Infrastructure.ExceptionHandling;
 using Shouldly;
 
-namespace MyECommerceApp.Tests;
+namespace MyECommerceApp.Tests.Infrastructure;
 
 public class Result
 {
@@ -44,10 +44,10 @@ public class Result
 }
 
 
-public class Result<TResponse> 
+public class Result<TResponse>
     where TResponse : class
 {
-    public TResponse? Response { get; set; }   
+    public TResponse? Response { get; set; }
     public ProblemDetails? Error { get; set; }
 
     public Result()
@@ -57,7 +57,7 @@ public class Result<TResponse>
 
     public Result(TResponse response)
     {
-        Response= response;
+        Response = response;
     }
 
     public Result(ProblemDetails problemDetails)

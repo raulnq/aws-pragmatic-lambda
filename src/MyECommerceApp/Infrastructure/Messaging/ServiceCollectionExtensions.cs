@@ -1,4 +1,6 @@
-﻿using Amazon.SimpleNotificationService;
+﻿using Amazon.Extensions.NETCore.Setup;
+using Amazon.SimpleNotificationService;
+using Humanizer.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,6 +10,15 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration)
     {
+        var isLocal = configuration.GetValue("IsLocal", false);
+        if(isLocal)
+        {
+            var awsOptions = configuration.GetAWSOptions();
+            awsOptions.DefaultClientConfig.ServiceURL = "http://localhost:4566";
+            awsOptions.DefaultClientConfig.UseHttp = true;
+            services.AddDefaultAWSOptions(awsOptions);
+        }
+
         services.AddAWSService<IAmazonSimpleNotificationService>();
 
         services.AddScoped(f =>

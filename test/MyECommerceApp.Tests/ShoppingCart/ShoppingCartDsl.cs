@@ -2,6 +2,7 @@
 using Bogus;
 using MyECommerceApp.ShoppingCart;
 using Xunit.Abstractions;
+using MyECommerceApp.Tests.Infrastructure;
 
 namespace MyECommerceApp.Tests.ShoppingCart;
 

@@ -1,6 +1,7 @@
 ﻿using Shouldly;
 using MyECommerceApp.Clients;
 using Xunit.Abstractions;
+using MyECommerceApp.Tests.Infrastructure;
 
 namespace MyECommerceApp.Tests.ClientRequests;
 
