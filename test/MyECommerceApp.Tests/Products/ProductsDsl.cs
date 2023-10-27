@@ -37,6 +37,8 @@ public class ProductsDsl : Dsl
         return (request, result.Response!);
     }
 
+
+
     public async Task<EnableProduct.Command> Enable(Action<EnableProduct.Command>? setup = null, string? error = null)
     {
         var request = new EnableProduct.Command();

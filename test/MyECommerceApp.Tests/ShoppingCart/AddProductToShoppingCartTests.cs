@@ -37,7 +37,7 @@ public class AddProductToShoppingCartTests : IAsyncLifetime
 
         await _appDsl.Products.Enable(c => c.ProductId = productResult.ProductId);
 
-        await _appDsl.ShoppingCart.AddProductForClient(c =>
+        await _appDsl.ShoppingCart.AddProduct(c =>
         {
             c.ProductId = productResult.ProductId;
             c.ClientId = clientRequestResult.ClientRequestId;

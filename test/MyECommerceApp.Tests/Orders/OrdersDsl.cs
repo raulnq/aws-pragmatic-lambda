@@ -16,7 +16,7 @@ public class OrdersDsl : Dsl
         _httpClient = httpClient;
     }
 
-    public async Task<(PlaceOrder.Command, PlaceOrder.Result)> PlaceOrderForClient(Action<PlaceOrder.Command>? setup = null, string? error = null)
+    public async Task<(PlaceOrder.Command, PlaceOrder.Result)> PlaceOrder(Action<PlaceOrder.Command>? setup = null, string? error = null)
     {
         var faker = new Faker<PlaceOrder.Command>()
             .RuleFor(command => command.DeliveryDate, faker => DateTimeOffset.UtcNow.AddDays(1))

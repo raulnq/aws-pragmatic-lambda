@@ -16,7 +16,7 @@ public class ShoppingCartDsl : Dsl
         _httpClient = httpClient;
     }
 
-    public async Task<(AddProductToShoppingCart.Command, AddProductToShoppingCart.Result)> AddProductForClient(Action<AddProductToShoppingCart.Command>? setup = null, string? error = null)
+    public async Task<(AddProductToShoppingCart.Command, AddProductToShoppingCart.Result)> AddProduct(Action<AddProductToShoppingCart.Command>? setup = null, string? error = null)
     {
         var faker = new Faker<AddProductToShoppingCart.Command>()
             .RuleFor(command => command.Quantity, faker => faker.Random.Number(0,1000));
