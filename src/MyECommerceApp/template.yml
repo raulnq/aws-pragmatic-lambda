@@ -11,8 +11,9 @@ Globals:
       Variables:
         POWERTOOLS_SERVICE_NAME: myecommerceapp
         POWERTOOLS_LOG_LEVEL: Debug
-        POWERTOOLS_LOGGER_LOG_EVENT: false
         POWERTOOLS_LOGGER_CASE: CamelCase
+        POWERTOOLS_METRICS_NAMESPACE: myecommerceapp
+        POWERTOOLS_LOGGER_LOG_EVENT: true
         DbConnectionString:
           Ref: DbConnectionStringParam
         TopicArn:

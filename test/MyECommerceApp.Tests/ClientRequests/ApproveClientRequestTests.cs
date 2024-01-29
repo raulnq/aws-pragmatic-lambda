@@ -8,7 +8,7 @@ public class ApproveClientRequestTests : IAsyncLifetime
 {
     private readonly AppDsl _appDsl;
 
-    public ApproveClientRequestTests(ITestOutputHelper  output)
+    public ApproveClientRequestTests(ITestOutputHelper output)
     {
         _appDsl = new AppDsl(output);
     }

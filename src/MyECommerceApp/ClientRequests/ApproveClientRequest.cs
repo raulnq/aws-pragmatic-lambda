@@ -3,6 +3,8 @@ using Amazon.Lambda.Annotations;
 using MyECommerceApp.Infrastructure.EntityFramework;
 using MyECommerceApp.Infrastructure.Messaging;
 using MyECommerceApp.Infrastructure.Host;
+using AWS.Lambda.Powertools.Logging;
+using AWS.Lambda.Powertools.Tracing;
 
 namespace MyECommerceApp.ClientRequests;
 
@@ -31,6 +33,8 @@ public class ApproveClientRequest: BaseFunction
     }
 
     [LambdaFunction]
+    [Logging]
+    [Tracing]
     [RestApi(LambdaHttpMethod.Post, "/client-requests/{clientRequestId}/approve")]
     public Task<IHttpResult> Handle(
         [FromServices] TransactionBehavior behavior,

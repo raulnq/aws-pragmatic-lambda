@@ -1,5 +1,8 @@
 ﻿using Amazon.Lambda.Annotations;
 using Amazon.Lambda.SQSEvents;
+using AWS.Lambda.Powertools.Logging;
+using AWS.Lambda.Powertools.Metrics;
+using AWS.Lambda.Powertools.Tracing;
 using FluentValidation;
 using MyECommerceApp.ClientRequests;
 using MyECommerceApp.Infrastructure.EntityFramework;
@@ -55,6 +58,9 @@ public class RegisterClient : BaseFunction
     }
 
     [LambdaFunction]
+    [Logging]
+    [Tracing]
+    [Metrics]
     public Task<SQSBatchResponse> Handle(
         [FromServices] TransactionBehavior behavior,
         [FromServices] Handler handler,
@@ -73,6 +79,7 @@ public class RegisterClient : BaseFunction
             };
             new RegisterClient.Validator().ValidateAndThrow(command);
             await behavior.Handle(() => handler.Handle(command));
+            Metrics.AddMetric("SuccessfulClient", 1, MetricUnit.Count);
         }, sqsEvent);
     }
 }

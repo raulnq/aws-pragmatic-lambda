@@ -5,6 +5,8 @@ using MassTransit;
 using MyECommerceApp.Infrastructure.EntityFramework;
 using System.Text.Json.Serialization;
 using MyECommerceApp.Infrastructure.Host;
+using AWS.Lambda.Powertools.Logging;
+using AWS.Lambda.Powertools.Tracing;
 
 namespace MyECommerceApp.ClientRequests;
 
@@ -63,6 +65,8 @@ public class RegisterClientRequest : BaseFunction
 
     [LambdaFunction]
     [RestApi(LambdaHttpMethod.Post, "/client-requests")]
+    [Logging]
+    [Tracing]
     public Task<IHttpResult> Handle(
         [FromServices] AnyClientRequests.Runner runner,
         [FromServices] TransactionBehavior behavior,
